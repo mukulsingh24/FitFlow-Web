@@ -1,0 +1,80 @@
+# General OS & Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+*.pem
+*.swp
+
+# Node modules (applies recursively to frontend, backend, root)
+node_modules/
+jspm_packages/
+
+# Yarn
+.pnp
+.pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Python / ML (for ml folder)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+profile_default/
+ipython_config.py
+
+# Machine Learning Models & Data (optional, usually large files)
+*.h5
+*.pth
+*.pt
+*.pkl
+*.model
+
+# Output folder
+output/
+firebaseConfig.js
