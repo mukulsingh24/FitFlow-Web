@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
+import GlassNav from '@/app/components/GlassNav'
 
 /* ── Scroll-reveal ── */
 function useReveal() {
@@ -143,21 +144,7 @@ export default function BmiPage() {
       <div className={`pointer-events-none absolute -right-20 bottom-40 h-72 w-72 rounded-full bg-green-500/10 blur-[120px] pulse-slow ${orbOpacity}`} />
 
       {/* ── Nav ── */}
-      <nav className={`sticky top-0 z-50 flex items-center justify-between border-b px-6 py-4 backdrop-blur-xl md:px-12 ${navBg}`}>
-        <h1 onClick={() => router.push('/dashboard')} className="cursor-pointer text-2xl font-black uppercase tracking-wider">FitFlow</h1>
-        <div className={`hidden md:flex items-center gap-8 text-xs font-semibold uppercase tracking-widest ${navText}`}>
-          <span onClick={() => router.push('/dashboard')} className="cursor-pointer transition hover:text-white">Dashboard</span>
-          <span onClick={() => router.push('/foodtracker')} className="cursor-pointer transition hover:text-white">Food Tracker</span>
-          <span className={dark ? 'text-white' : 'text-black'}>BMI Calc</span>
-          <span onClick={() => router.push('/profile')} className="cursor-pointer transition hover:text-white">Profile</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <button onClick={toggleTheme} className={`rounded-full border px-4 py-2 text-sm font-medium transition ${dark ? 'border-white/30 hover:bg-white/10' : 'border-gray-300 hover:bg-gray-100'}`}>
-            {dark ? '☀️ Light' : '🌙 Dark'}
-          </button>
-          <button onClick={() => router.push('/dashboard')} className={`rounded-full ${accentBtn} px-5 py-2 text-sm font-bold transition`}>Dashboard</button>
-        </div>
-      </nav>
+      <GlassNav dark={dark} toggleTheme={toggleTheme} userName="" />
 
       {/* ── Hero ── */}
       <section className="relative flex flex-col items-center justify-center overflow-hidden px-6 py-20 text-center">
