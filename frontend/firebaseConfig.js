@@ -7,15 +7,15 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Values are read from environment variables (set in .env.local / Vercel dashboard)
 const firebaseConfig = {
-  apiKey: "AIzaSyB7G5315O4eCTr_MAAHg0kZCNFJE8Q8jfA",
-  authDomain: "fitflow-web.firebaseapp.com",
-  projectId: "fitflow-web",
-  storageBucket: "fitflow-web.firebasestorage.app",
-  messagingSenderId: "493453497458",
-  appId: "1:493453497458:web:363b0eafd2b04940721eeb",
-  measurementId: "G-LYTKT66HQ4"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
