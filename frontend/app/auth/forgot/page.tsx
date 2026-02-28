@@ -16,8 +16,8 @@ export default function ForgotPassword() {
       await sendPasswordResetEmail(auth, email)
       setMessage('Password reset link sent! Check your inbox.')
       setError('')
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to send reset email')
       setMessage('')
     }
   }

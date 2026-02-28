@@ -22,9 +22,9 @@ export default function Register() {
       // const user = result.user;
       console.log("Registered with Google", result.user);
       router.push('/dashboard'); // Google users are pre-verification
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error signing up with Google", error);
-      setError(error.message);
+      setError(error instanceof Error ? error.message : 'Google sign-up failed');
     }
   };
 
@@ -49,13 +49,14 @@ export default function Register() {
 
       // Redirect to verification
       router.push('/auth/verification')
-    } catch (err: any) {
-      if (err.code === 'auth/email-already-in-use') {
+    } catch (err: unknown) {
+      const firebaseErr = err as { code?: string; message?: string }
+      if (firebaseErr.code === 'auth/email-already-in-use') {
         setError('This email is already registered. Please sign in instead.')
-      } else if (err.code === 'auth/weak-password') {
+      } else if (firebaseErr.code === 'auth/weak-password') {
         setError('Password should be at least 6 characters.')
       } else {
-        setError(err.message)
+        setError(firebaseErr.message || 'Registration failed')
       }
     }
   }

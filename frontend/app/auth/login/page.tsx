@@ -47,7 +47,7 @@ export default function Login() {
     try {
       await signInWithEmailAndPassword(auth, email, password)
       router.push('/dashboard')
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Login failed", err)
       setError("Failed to sign in. Please check your credentials.")
     }
@@ -208,7 +208,7 @@ export default function Login() {
           </div>
 
           <p className="mt-8 text-center text-xs text-white/40">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/auth/register" className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
               Sign up free
             </Link>

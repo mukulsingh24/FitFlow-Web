@@ -221,8 +221,8 @@ export default function StepsSyncPage() {
       const todayStr = new Date().toISOString().split('T')[0]
       const todayEntry = days.find(d => d.date === todayStr)
       setTodaySteps(todayEntry?.steps || 0)
-    } catch (err: any) {
-      setError(err.message || 'Failed to sync steps')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to sync steps')
     } finally {
       setSyncing(false)
     }

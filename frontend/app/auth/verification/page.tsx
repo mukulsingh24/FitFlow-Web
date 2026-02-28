@@ -41,12 +41,13 @@ export default function Verification() {
       await sendEmailVerification(auth.currentUser);
       console.log("Verification email sent successfully.");
       setMessage('Verification email resent! Please check your inbox (and spam).');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error sending verification email:", error);
-      if (error.code === 'auth/too-many-requests') {
+      const firebaseErr = error as { code?: string; message?: string }
+      if (firebaseErr.code === 'auth/too-many-requests') {
          setMessage('Too many requests. Please wait a few minutes before trying again.')
       } else {
-         setMessage('Error: ' + error.message);
+         setMessage('Error: ' + (firebaseErr.message || 'Unknown error'));
       }
     } finally {
       setIsResending(false);
@@ -87,7 +88,7 @@ export default function Verification() {
               Verify Email
             </h1>
             <p className="text-white/60 text-sm font-light">
-               We've sent a verification link to <strong>{user?.email}</strong>. Please check your inbox and click the link to continue.
+               We&apos;ve sent a verification link to <strong>{user?.email}</strong>. Please check your inbox and click the link to continue.
             </p>
           </div>
 
@@ -115,7 +116,7 @@ export default function Verification() {
                 </div>
                 
                 <p className="text-xs text-center text-white/40 max-w-xs">
-                    Please allow a few minutes for the email to arrive. Check your spam folder if you don't see it.
+                    Please allow a few minutes for the email to arrive. Check your spam folder if you don&apos;t see it.
                 </p>
             </div>
 
@@ -125,12 +126,12 @@ export default function Verification() {
               onClick={handleManualCheck}
               className="w-full rounded-xl bg-linear-to-r from-indigo-600 to-violet-600 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 hover:from-indigo-500 hover:to-violet-500 hover:shadow-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.98]"
             >
-              I've Verified My Email
+              I&apos;ve Verified My Email
             </button>
           </div>
 
           <p className="mt-8 text-center text-xs text-white/40">
-            Didn't receive the email?{' '}
+            Didn&apos;t receive the email?{' '}
             <button 
                 onClick={handleResend}
                 disabled={isResending}
