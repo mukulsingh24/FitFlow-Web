@@ -10,6 +10,9 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [adminMode, setAdminMode] = useState(false)
+  const [adminKey, setAdminKey] = useState('')
+  const [adminError, setAdminError] = useState('')
   const router = useRouter()
 
   useEffect(() => {
@@ -47,6 +50,18 @@ export default function Login() {
     } catch (err: any) {
       console.error("Login failed", err)
       setError("Failed to sign in. Please check your credentials.")
+    }
+  }
+
+  const handleAdminLogin = (e: React.FormEvent) => {
+    e.preventDefault()
+    setAdminError('')
+    if (adminKey === 'amd1234567890') {
+      localStorage.setItem('fitflow_admin', 'true')
+      localStorage.setItem('fitflow_profile', JSON.stringify({ displayName: 'Admin' }))
+      router.push('/dashboard')
+    } else {
+      setAdminError('Invalid admin key. Access denied.')
     }
   }
 
@@ -198,6 +213,68 @@ export default function Login() {
               Sign up free
             </Link>
           </p>
+
+          {/* ── Admin Login Toggle ── */}
+          <div className="relative mt-10">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 py-1 text-white/50 bg-[#162032]/80 rounded-full backdrop-blur-xl">Admin Access</span>
+            </div>
+          </div>
+
+          {!adminMode ? (
+            <button
+              type="button"
+              onClick={() => { setAdminMode(true); setError(''); setAdminError('') }}
+              className="mt-6 w-full flex items-center justify-center gap-2 rounded-2xl border border-amber-500/30 bg-amber-500/10 py-4 px-6 text-lg font-semibold text-amber-300 hover:bg-amber-500/20 hover:border-amber-500/50 transition-all duration-200 hover:-translate-y-0.5"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              Login as Admin
+            </button>
+          ) : (
+            <form onSubmit={handleAdminLogin} className="mt-6 space-y-4">
+              {adminError && (
+                <div className="p-3 rounded-xl bg-red-500/20 border border-red-500/50 text-red-200 text-center text-sm font-medium backdrop-blur-md">
+                  {adminError}
+                </div>
+              )}
+              <div className="relative group/input">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg className="h-6 w-6 text-amber-400/60 group-focus-within/input:text-amber-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                  </svg>
+                </div>
+                <input
+                  type="password"
+                  value={adminKey}
+                  onChange={(e) => setAdminKey(e.target.value)}
+                  className="block w-full rounded-2xl border border-amber-500/20 bg-amber-500/5 py-4 pl-12 pr-4 text-white text-lg placeholder-amber-300/30 backdrop-blur-sm focus:border-amber-500/50 focus:bg-amber-500/10 focus:outline-none focus:ring-1 focus:ring-amber-500/50 transition-all duration-200"
+                  placeholder="Enter admin key"
+                  autoFocus
+                  required
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => { setAdminMode(false); setAdminKey(''); setAdminError('') }}
+                  className="flex-1 rounded-2xl border border-white/10 bg-white/5 py-3 text-sm font-medium text-white/60 hover:bg-white/10 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 py-3 text-sm font-bold text-white shadow-lg shadow-amber-500/20 hover:from-amber-400 hover:to-orange-400 hover:shadow-amber-500/40 transition-all hover:-translate-y-0.5"
+                >
+                  Access Dashboard
+                </button>
+              </div>
+            </form>
+          )}
         </div>
       </div>
     </div>
