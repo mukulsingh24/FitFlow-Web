@@ -79,7 +79,7 @@ export default function Verification() {
         <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/10 backdrop-blur-xl shadow-2xl p-10 relative group">
           
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold bg-linear-to-r from-white via-white to-white/70 bg-clip-text text-transparent mb-2 tracking-tight">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent mb-2 tracking-tight">
               Verify Email
             </h1>
             <p className="text-white/60 text-sm font-light">
@@ -118,7 +118,7 @@ export default function Verification() {
 
              <button
               onClick={handleManualCheck}
-              className="w-full rounded-xl bg-linear-to-r from-indigo-600 to-violet-600 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 hover:from-indigo-500 hover:to-violet-500 hover:shadow-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.98]"
+              className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 hover:from-indigo-500 hover:to-violet-500 hover:shadow-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.98]"
             >
               I&apos;ve Verified My Email
             </button>

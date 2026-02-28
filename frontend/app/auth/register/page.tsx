@@ -75,10 +75,10 @@ export default function Register() {
       <div className="relative z-10 w-full max-w-2xl transform transition-all duration-300">
         <div className="overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/10 backdrop-blur-xl shadow-2xl p-8 md:p-12 relative group">
           
-          <div className="absolute inset-0 bg-linear-to-br from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
           <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold bg-linear-to-r from-white via-white to-white/70 bg-clip-text text-transparent mb-2 tracking-tight">
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent mb-2 tracking-tight">
               Create Account
             </h1>
             <p className="text-white/60 text-base font-light">
@@ -153,7 +153,7 @@ export default function Register() {
 
             <button
               type="submit"
-              className="w-full rounded-xl bg-linear-to-r from-indigo-600 to-violet-600 py-3.5 text-base font-bold text-white shadow-lg shadow-indigo-500/20 hover:from-indigo-500 hover:to-violet-500 hover:shadow-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all transform hover:-translate-y-0.5 active:scale-[0.98]"
+              className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 py-3.5 text-base font-bold text-white shadow-lg shadow-indigo-500/20 hover:from-indigo-500 hover:to-violet-500 hover:shadow-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all transform hover:-translate-y-0.5 active:scale-[0.98]"
             >
               Sign Up
             </button>

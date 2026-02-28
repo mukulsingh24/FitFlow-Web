@@ -1,7 +1,8 @@
 'use client'
+/* eslint-disable @next/next/no-img-element */
 
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
-import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import GlassNav from '@/app/components/GlassNav'
 
 type FoodPrediction = {
@@ -61,6 +62,8 @@ function Reveal({ children, className = '' }: { children: React.ReactNode; class
 }
 
 export default function FoodTrackerPage() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const router = useRouter()
   const [selectedFileName, setSelectedFileName] = useState<string>('')
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -77,10 +80,16 @@ export default function FoodTrackerPage() {
   const toggleTheme = () => { const n = !dark; setDark(n); localStorage.setItem('fitflow_theme', n ? 'dark' : 'light') }
 
   const bg = dark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const navBg = dark ? 'bg-black/80 border-white/10' : 'bg-white/80 border-gray-200'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const navText = dark ? 'text-gray-400' : 'text-gray-500'
   const cardBg = dark ? 'border-white/10 bg-white/[.03]' : 'border-gray-200 bg-white'
   const cardHover = dark ? 'hover:bg-white/[.06]' : 'hover:bg-gray-50'
   const mutedText = dark ? 'text-gray-500' : 'text-gray-400'
   const bodyText = dark ? 'text-gray-400' : 'text-gray-500'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const accentBtn = dark ? 'bg-white text-black hover:bg-gray-200' : 'bg-black text-white hover:bg-gray-800'
   const orbOpacity = dark ? '' : 'opacity-30'
   const overlayGrad = dark ? 'from-black via-black/70 to-black' : 'from-gray-50 via-gray-50/80 to-gray-50'
   const statBorder = dark ? 'border-white/10 bg-white/[.02]' : 'border-gray-200 bg-gray-100/50'
@@ -184,7 +193,7 @@ export default function FoodTrackerPage() {
               <label className={`group relative mt-6 flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed px-6 py-16 text-center transition ${dark ? 'border-white/20 bg-white/[.02] hover:border-white/40 hover:bg-white/[.04]' : 'border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100'}`}>
                 <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
                 {previewUrl ? (
-                  <Image src={previewUrl} alt="preview" width={320} height={160} className="mb-4 h-40 w-auto rounded-xl object-cover shadow-lg" />
+                  <img src={previewUrl} alt="preview" className="mb-4 h-40 w-auto rounded-xl object-cover shadow-lg" />
                 ) : (
                   <span className="mb-3 text-5xl">📷</span>
                 )}

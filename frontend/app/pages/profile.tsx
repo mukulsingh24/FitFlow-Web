@@ -59,13 +59,14 @@ export default function ProfilePage() {
   const [dark, setDark] = useState(true)
 
   useEffect(() => {
+    const isAdmin = localStorage.getItem('fitflow_admin') === 'true'
     const unsub = onAuthStateChanged(auth, (cur) => {
-      if (!cur) { router.push('/auth/login'); return }
-      setUser(cur)
+      if (!cur && !isAdmin) { router.push('/auth/login'); return }
+      if (cur) setUser(cur)
       const stored = localStorage.getItem('fitflow_profile')
       if (stored) {
-        setProfile(JSON.parse(stored))
-      } else {
+        setProfile((prev) => ({ ...prev, ...JSON.parse(stored) }))
+      } else if (cur) {
         setProfile((p) => ({ ...p, displayName: cur.displayName || cur.email?.split('@')[0] || '' }))
       }
     })
@@ -92,6 +93,10 @@ export default function ProfilePage() {
   }
 
   const bg = dark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const navBg = dark ? 'bg-black/80 border-white/10' : 'bg-white/80 border-gray-200'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const navText = dark ? 'text-gray-400' : 'text-gray-500'
   const cardBg = dark ? 'border-white/10 bg-white/[.03]' : 'border-gray-200 bg-white'
   const inputBg = dark ? 'bg-white/[.06] border-white/10 text-white placeholder:text-gray-500' : 'bg-gray-100 border-gray-300 text-gray-900 placeholder:text-gray-400'
   const labelText = dark ? 'text-gray-400' : 'text-gray-600'
@@ -195,7 +200,7 @@ function Field({ label, value, onChange, placeholder = '', type = 'text', labelT
   return (
     <div>
       <label className={`block text-xs font-semibold uppercase tracking-widest ${labelText}`}>{label}</label>
-      <input type={type} className={`mt-2 w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2 focus:ring-indigo-500 ${inputBg}`} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
+      <input type={type} className={`mt-2 w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2 focus:ring-indigo-500 ${inputBg}`} value={value ?? ''} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
     </div>
   )
 }
@@ -206,7 +211,7 @@ function SelectField({ label, value, onChange, options, labelText, inputBg }: {
   return (
     <div>
       <label className={`block text-xs font-semibold uppercase tracking-widest ${labelText}`}>{label}</label>
-      <select className={`mt-2 w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2 focus:ring-indigo-500 ${inputBg}`} value={value} onChange={(e) => onChange(e.target.value)}>
+      <select className={`mt-2 w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2 focus:ring-indigo-500 ${inputBg}`} value={value ?? ''} onChange={(e) => onChange(e.target.value)}>
         {options.map((o) => <option key={o} value={o}>{o}</option>)}
       </select>
     </div>

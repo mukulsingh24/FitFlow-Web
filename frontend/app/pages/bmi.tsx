@@ -82,7 +82,8 @@ export default function BmiPage() {
   const [result, setResult] = useState<{ bmi: number; analysis: ReturnType<typeof bmiAnalysis>; ideal: number; bmr: number; tdee: number } | null>(null)
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (cur) => { if (!cur) router.push('/auth/login') })
+    const isAdmin = localStorage.getItem('fitflow_admin') === 'true'
+    const unsub = onAuthStateChanged(auth, (cur) => { if (!cur && !isAdmin) router.push('/auth/login') })
     const t = localStorage.getItem('fitflow_theme')
     if (t === 'light') setDark(false)
     return () => unsub()
@@ -110,6 +111,10 @@ export default function BmiPage() {
   }
 
   const bg = dark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const navBg = dark ? 'bg-black/80 border-white/10' : 'bg-white/80 border-gray-200'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const navText = dark ? 'text-gray-400' : 'text-gray-500'
   const cardBg = dark ? 'border-white/10 bg-white/[.03]' : 'border-gray-200 bg-white'
   const inputBg = dark ? 'bg-white/[.06] border-white/10 text-white placeholder:text-gray-500' : 'bg-gray-100 border-gray-300 text-gray-900 placeholder:text-gray-400'
   const labelText = dark ? 'text-gray-400' : 'text-gray-600'

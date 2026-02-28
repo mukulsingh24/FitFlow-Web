@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { onAuthStateChanged, User } from 'firebase/auth'
+import { onAuthStateChanged, signOut, User } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
 import GlassNav from '@/app/components/GlassNav'
 
@@ -59,8 +59,10 @@ export default function Dashboard() {
   const router = useRouter()
 
   useEffect(() => {
+    const isAdmin = localStorage.getItem('fitflow_admin') === 'true'
     const unsub = onAuthStateChanged(auth, (cur) => {
-      if (cur) { if (!cur.emailVerified) router.push('/auth/verification'); setUser(cur) } else router.push('/auth/login')
+      if (cur) { if (!cur.emailVerified) router.push('/auth/verification'); setUser(cur) }
+      else if (!isAdmin) router.push('/auth/login')
       setLoading(false)
     })
     const t = localStorage.getItem('fitflow_theme')
@@ -81,8 +83,14 @@ export default function Dashboard() {
 
   const toggleTheme = () => { const n = !dark; setDark(n); localStorage.setItem('fitflow_theme', n ? 'dark' : 'light') }
   const userName = profileName || user?.displayName || user?.email?.split('@')[0] || 'Athlete'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleLogout = async () => { try { await signOut(auth); router.push('/auth/login') } catch (e) { console.error(e) } }
 
   const bg = dark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const navBg = dark ? 'bg-black/80 border-white/10' : 'bg-white/80 border-gray-200'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const navText = dark ? 'text-gray-400' : 'text-gray-500'
   const cardBg = dark ? 'border-white/10 bg-white/[.03]' : 'border-gray-200 bg-white'
   const cardHover = dark ? 'hover:bg-white/[.06] hover:border-white/20' : 'hover:bg-gray-50 hover:border-gray-300'
   const mutedText = dark ? 'text-gray-500' : 'text-gray-400'

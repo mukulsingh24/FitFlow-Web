@@ -43,7 +43,8 @@ export default function WaterTrackerPage() {
   const [profileName, setProfileName] = useState('')
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (cur) => { if (!cur) router.push('/auth/login') })
+    const isAdmin = localStorage.getItem('fitflow_admin') === 'true'
+    const unsub = onAuthStateChanged(auth, (cur) => { if (!cur && !isAdmin) router.push('/auth/login') })
     const t = localStorage.getItem('fitflow_theme')
     if (t === 'light') setDark(false)
     try {
