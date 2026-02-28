@@ -4,25 +4,47 @@ import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 /* ── Types ── */
-type MockPrediction = {
+type FoodPrediction = {
   foodName: string
   calories: number
   confidence: number
   macros: { protein: number; carbs: number; fats: number }
   suggestions: string[]
+  detailedAnalysis?: string
 }
 
-/* ── Mock model outputs ── */
-const mockPredictions: MockPrediction[] = [
-  { foodName: 'Grilled Chicken Bowl', calories: 620, confidence: 94, macros: { protein: 42, carbs: 58, fats: 18 }, suggestions: ['Add salad for extra fiber', 'Reduce sauce to lower sodium'] },
-  { foodName: 'Veg Biryani Plate', calories: 710, confidence: 89, macros: { protein: 16, carbs: 102, fats: 24 }, suggestions: ['Pair with curd for protein balance', 'Use smaller portion at night'] },
-  { foodName: 'Oats + Banana Smoothie', calories: 380, confidence: 92, macros: { protein: 14, carbs: 61, fats: 9 }, suggestions: ['Add peanut butter for healthy fats', 'Great pre-workout option'] },
-  { foodName: 'Paneer Tikka Wrap', calories: 540, confidence: 91, macros: { protein: 28, carbs: 44, fats: 22 }, suggestions: ['Swap mayo for yogurt dip', 'Great post-workout meal'] },
-  { foodName: 'Dal Chawal + Sabzi', calories: 480, confidence: 87, macros: { protein: 18, carbs: 76, fats: 10 }, suggestions: ['Add a side salad for micronutrients', 'Balanced Indian meal — well done!'] },
-]
+/* ── API helper ── */
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+async function analyzeWithGroq(file: File): Promise<FoodPrediction> {
+  const base64 = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      // strip the data:image/...;base64, prefix
+      resolve(result.split(',')[1]);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  const res = await fetch(`${API_BASE}/api/food/analyze`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ imageBase64: base64, mimeType: file.type }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Unknown error' }));
+    throw new Error(err.error || 'Failed to analyze image');
+  }
+
+  const json = await res.json();
+  return json.data as FoodPrediction;
+}
 
 /* ── Meal log item type ── */
-type MealEntry = { prediction: MockPrediction; fileName: string; time: string }
+type MealEntry = { prediction: FoodPrediction; fileName: string; time: string }
 
 /* ── Scroll-reveal hook ── */
 function useReveal() {
@@ -48,7 +70,8 @@ export default function FoodTrackerPage() {
   const [selectedFileName, setSelectedFileName] = useState<string>('')
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [prediction, setPrediction] = useState<MockPrediction | null>(null)
+  const [prediction, setPrediction] = useState<FoodPrediction | null>(null)
+  const [analysisError, setAnalysisError] = useState<string | null>(null)
   const [mealLog, setMealLog] = useState<MealEntry[]>([])
   const [dark, setDark] = useState(true)
 
@@ -88,11 +111,18 @@ export default function FoodTrackerPage() {
     setPreviewUrl(URL.createObjectURL(file))
     setIsAnalyzing(true)
     setPrediction(null)
-    await new Promise((r) => setTimeout(r, 1800))
-    const pred = mockPredictions[Math.floor(Math.random() * mockPredictions.length)]
-    setPrediction(pred)
-    setMealLog((prev) => [...prev, { prediction: pred, fileName: file.name, time: new Date().toLocaleTimeString() }])
-    setIsAnalyzing(false)
+    setAnalysisError(null)
+    try {
+      const pred = await analyzeWithGroq(file)
+      setPrediction(pred)
+      setMealLog((prev) => [...prev, { prediction: pred, fileName: file.name, time: new Date().toLocaleTimeString() }])
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Analysis failed'
+      setAnalysisError(message)
+      console.error('Food analysis error:', err)
+    } finally {
+      setIsAnalyzing(false)
+    }
   }
 
   return (
@@ -179,7 +209,7 @@ export default function FoodTrackerPage() {
             {/* Upload card */}
             <div className={`lg:col-span-3 rounded-3xl border p-8 ${cardBg}`}>
               <h2 className="text-xl font-bold uppercase tracking-wide">Upload Meal Image</h2>
-              <p className={`mt-1 text-sm ${mutedText}`}>Supports JPG, PNG, HEIC — demo mode with mock AI output</p>
+              <p className={`mt-1 text-sm ${mutedText}`}>Supports JPG, PNG, HEIC — powered by Groq AI</p>
 
               <label className={`group relative mt-6 flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed px-6 py-16 text-center transition ${dark ? 'border-white/20 bg-white/[.02] hover:border-white/40 hover:bg-white/[.04]' : 'border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100'}`}>
                 <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
@@ -195,7 +225,16 @@ export default function FoodTrackerPage() {
                 {isAnalyzing && (
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                     <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent scan-line" />
-                    <span className="relative text-sm font-semibold text-green-300">Analyzing with AI...</span>
+                    <span className="relative text-sm font-semibold text-green-300">Analyzing with FitFlow AI</span>
+                  </div>
+                )}
+
+                {analysisError && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <div className="rounded-xl bg-red-500/20 border border-red-500/40 px-5 py-4 text-center max-w-xs">
+                      <p className="text-sm font-semibold text-red-300">Analysis Failed</p>
+                      <p className="mt-1 text-xs text-red-200/70">{analysisError}</p>
+                    </div>
                   </div>
                 )}
               </label>
@@ -235,7 +274,7 @@ export default function FoodTrackerPage() {
         <section className="pb-20">
           <Reveal className="mx-auto max-w-5xl px-6">
             <div className={`rounded-3xl border p-8 md:p-10 ${cardBg}`}>
-              <p className="text-[10px] font-semibold uppercase tracking-[.35em] text-green-400">Model Output (Mock)</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[.35em] text-green-400">Groq Vision Analysis</p>
               <h3 className="mt-3 text-2xl font-black uppercase md:text-3xl">AI Analysis Result</h3>
 
               <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -262,6 +301,13 @@ export default function FoodTrackerPage() {
                   ))}
                 </ul>
               </div>
+
+              {prediction.detailedAnalysis && (
+                <div className={`mt-4 rounded-2xl border p-5 ${dark ? 'border-cyan-500/20 bg-cyan-500/[.06]' : 'border-cyan-200 bg-cyan-50'}`}>
+                  <p className={`text-sm font-bold ${dark ? 'text-cyan-200' : 'text-cyan-700'}`}>Detailed Analysis</p>
+                  <p className={`mt-2 text-sm leading-relaxed ${dark ? 'text-cyan-100/80' : 'text-cyan-700'}`}>{prediction.detailedAnalysis}</p>
+                </div>
+              )}
             </div>
           </Reveal>
         </section>
