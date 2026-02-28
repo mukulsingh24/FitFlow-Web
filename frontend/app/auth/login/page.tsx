@@ -33,7 +33,6 @@ export default function Login() {
       const result = await signInWithPopup(auth, googleProvider)
       const user = result.user
       console.log('Google Login Success:', user)
-      // Navigate to dashboard or home page after successful login
       router.push('/dashboard') 
     } catch (error) {
       console.error('Google Login Error:', error)
@@ -67,9 +66,7 @@ export default function Login() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden flex items-center justify-center p-4">
-      {/* Background Anime-style / Fitness Ambience */}
       <div className="absolute inset-0 z-0">
-         {/* Background Image with Overlay */}
          <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ 
@@ -78,22 +75,17 @@ export default function Login() {
         />
         <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px]" />
         
-        {/* Animated Gradient Orbs */}
         <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-purple-600/30 blur-[100px] animate-pulse mix-blend-overlay" style={{ animationDuration: '4s' }} />
         <div className="absolute top-[40%] -right-[20%] w-[60vw] h-[60vw] rounded-full bg-indigo-600/30 blur-[100px] animate-pulse delay-1000 mix-blend-overlay" style={{ animationDuration: '5s' }} />
         
-        {/* Dynamic Grid / Mesh Pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] mask-[radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)]" />
       </div>
 
-      {/* Glassmorphism Card */}
       <div className="relative z-10 w-full max-w-2xl transform transition-all duration-300">
         <div className="overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/10 backdrop-blur-xl shadow-2xl p-12 relative group">
           
-          {/* Subtle sheen effect on hover */}
           <div className="absolute inset-0 bg-linear-to-br from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-          {/* Logo / Header */}
           <div className="text-center mb-10">
             <h1 className="text-6xl font-bold bg-linear-to-r from-white via-white to-white/70 bg-clip-text text-transparent mb-3 tracking-tight">
               FitFlow
@@ -111,7 +103,6 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-8">
             
-            {/* Input Group: Email */}
             <div className="space-y-3">
               <label 
                 htmlFor="email" 
@@ -121,7 +112,6 @@ export default function Login() {
               </label>
               <div className="relative group/input">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  {/* User Icon */}
                   <svg className="h-6 w-6 text-white/50 group-focus-within/input:text-indigo-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
@@ -138,7 +128,6 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Input Group: Password */}
             <div className="space-y-3">
               <div className="flex justify-between items-center ml-1">
                 <label 
@@ -153,7 +142,6 @@ export default function Login() {
               </div>
               <div className="relative group/input">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  {/* Lock Icon */}
                   <svg className="h-6 w-6 text-white/50 group-focus-within/input:text-indigo-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
@@ -170,7 +158,6 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Primary Action */}
             <button
               type="submit"
               className="w-full rounded-2xl bg-linear-to-r from-indigo-600 to-violet-600 py-4 text-lg font-bold text-white shadow-lg shadow-indigo-500/20 hover:from-indigo-500 hover:to-violet-500 hover:shadow-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.98]"
@@ -179,7 +166,6 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Divider */}
           <div className="relative my-10">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-white/10"></div>
@@ -189,9 +175,7 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Social Logins */}
           <div className="grid grid-cols-1 gap-5">
-            {/* Google Button — Full width */}
             <button 
               type="button"
               onClick={handleGoogleLogin}
@@ -214,7 +198,6 @@ export default function Login() {
             </Link>
           </p>
 
-          {/* ── Admin Login Toggle ── */}
           <div className="relative mt-10">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-white/10"></div>
@@ -276,6 +259,10 @@ export default function Login() {
             </form>
           )}
         </div>
+
+        <p className="mt-6 text-center text-[10px] font-semibold uppercase tracking-widest text-emerald-500/50">
+          📱 FitFlow Mobile App — Coming Soon
+        </p>
       </div>
     </div>
   )

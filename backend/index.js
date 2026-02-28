@@ -4,16 +4,17 @@ const express = require('express');
 const cors = require('cors');
 const foodRoutes = require('./routes/foodRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const formRoutes = require('./routes/formRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
-app.use(express.json({ limit: '20mb' })); // large limit for base64 images
+app.use(express.json({ limit: '20mb' }));
 
-// Routes
 app.use('/api/food', foodRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/form', formRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'FitFlow API is running' });

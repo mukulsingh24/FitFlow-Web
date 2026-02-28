@@ -1,10 +1,9 @@
 'use client'
 
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import GlassNav from '@/app/components/GlassNav'
 
-/* ── Types ── */
 type FoodPrediction = {
   foodName: string
   calories: number
@@ -14,7 +13,6 @@ type FoodPrediction = {
   detailedAnalysis?: string
 }
 
-/* ── API helper ── */
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 async function analyzeWithGroq(file: File): Promise<FoodPrediction> {
@@ -22,7 +20,6 @@ async function analyzeWithGroq(file: File): Promise<FoodPrediction> {
     const reader = new FileReader();
     reader.onload = () => {
       const result = reader.result as string;
-      // strip the data:image/...;base64, prefix
       resolve(result.split(',')[1]);
     };
     reader.onerror = reject;
@@ -44,10 +41,8 @@ async function analyzeWithGroq(file: File): Promise<FoodPrediction> {
   return json.data as FoodPrediction;
 }
 
-/* ── Meal log item type ── */
 type MealEntry = { prediction: FoodPrediction; fileName: string; time: string }
 
-/* ── Scroll-reveal hook ── */
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
@@ -65,9 +60,7 @@ function Reveal({ children, className = '' }: { children: React.ReactNode; class
   return <div ref={ref} className={`transition-all duration-700 ease-out ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-14'} ${className}`}>{children}</div>
 }
 
-/* ════════════════════ FOOD TRACKER PAGE ════════════════════ */
 export default function FoodTrackerPage() {
-  const router = useRouter()
   const [selectedFileName, setSelectedFileName] = useState<string>('')
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -83,15 +76,11 @@ export default function FoodTrackerPage() {
 
   const toggleTheme = () => { const n = !dark; setDark(n); localStorage.setItem('fitflow_theme', n ? 'dark' : 'light') }
 
-  /* ── Theme vars ── */
   const bg = dark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'
-  const navBg = dark ? 'bg-black/80 border-white/10' : 'bg-white/80 border-gray-200'
-  const navText = dark ? 'text-gray-400' : 'text-gray-500'
   const cardBg = dark ? 'border-white/10 bg-white/[.03]' : 'border-gray-200 bg-white'
   const cardHover = dark ? 'hover:bg-white/[.06]' : 'hover:bg-gray-50'
   const mutedText = dark ? 'text-gray-500' : 'text-gray-400'
   const bodyText = dark ? 'text-gray-400' : 'text-gray-500'
-  const accentBtn = dark ? 'bg-white text-black hover:bg-gray-200' : 'bg-black text-white hover:bg-gray-800'
   const orbOpacity = dark ? '' : 'opacity-30'
   const overlayGrad = dark ? 'from-black via-black/70 to-black' : 'from-gray-50 via-gray-50/80 to-gray-50'
   const statBorder = dark ? 'border-white/10 bg-white/[.02]' : 'border-gray-200 bg-gray-100/50'
@@ -129,7 +118,6 @@ export default function FoodTrackerPage() {
   return (
     <div className={`relative w-full ${bg} selection:bg-white/20`}>
 
-      {/* ── keyframes ── */}
       <style jsx global>{`
         @keyframes pulseLine{0%{stroke-dashoffset:800}100%{stroke-dashoffset:0}}
         @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
@@ -145,10 +133,8 @@ export default function FoodTrackerPage() {
         .glow-pulse{animation:glowPulse 2s ease-in-out infinite}
       `}</style>
 
-      {/* ══ Glass Nav ══ */}
       <GlassNav dark={dark} toggleTheme={toggleTheme} userName="" />
 
-      {/* ══ HERO ══ */}
       <section className="relative flex min-h-[60vh] flex-col items-center justify-center overflow-hidden px-6 text-center">
         <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=2070&auto=format&fit=crop')" }} />
         <div className={`absolute inset-0 bg-gradient-to-b ${overlayGrad}`} />
@@ -169,7 +155,6 @@ export default function FoodTrackerPage() {
         </div>
       </section>
 
-      {/* ══ Daily summary ribbon ══ */}
       <Reveal>
         <section className={`border-y ${statBorder}`}>
           <div className="mx-auto grid max-w-5xl grid-cols-2 md:grid-cols-4">
@@ -188,12 +173,10 @@ export default function FoodTrackerPage() {
         </section>
       </Reveal>
 
-      {/* ══ UPLOAD SECTION ══ */}
       <section className="relative py-24 md:py-32">
         <div className={`pointer-events-none absolute -right-32 top-10 h-80 w-80 rounded-full bg-emerald-500/[.06] blur-[140px] ${orbOpacity}`} />
         <div className="mx-auto max-w-5xl px-6">
           <Reveal className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-            {/* Upload card */}
             <div className={`lg:col-span-3 rounded-3xl border p-8 ${cardBg}`}>
               <h2 className="text-xl font-bold uppercase tracking-wide">Upload Meal Image</h2>
               <p className={`mt-1 text-sm ${mutedText}`}>Supports JPG, PNG, HEIC — powered by Groq AI</p>
@@ -201,14 +184,13 @@ export default function FoodTrackerPage() {
               <label className={`group relative mt-6 flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed px-6 py-16 text-center transition ${dark ? 'border-white/20 bg-white/[.02] hover:border-white/40 hover:bg-white/[.04]' : 'border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100'}`}>
                 <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
                 {previewUrl ? (
-                  <img src={previewUrl} alt="preview" className="mb-4 h-40 w-auto rounded-xl object-cover shadow-lg" />
+                  <Image src={previewUrl} alt="preview" width={320} height={160} className="mb-4 h-40 w-auto rounded-xl object-cover shadow-lg" />
                 ) : (
                   <span className="mb-3 text-5xl">📷</span>
                 )}
                 <p className="text-sm font-semibold">Click or drop an image here</p>
                 <p className={`mt-1 text-xs ${mutedText}`}>{selectedFileName || 'No file selected'}</p>
 
-                {/* scan-line overlay while analysing */}
                 {isAnalyzing && (
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                     <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent scan-line" />
@@ -227,7 +209,6 @@ export default function FoodTrackerPage() {
               </label>
             </div>
 
-            {/* Daily goal sidebar */}
             <div className={`lg:col-span-2 rounded-3xl border p-8 ${cardBg}`}>
               <h3 className="text-base font-bold uppercase tracking-wide">Daily Intake Goal</h3>
               <div className="mt-6 space-y-4">
@@ -256,7 +237,6 @@ export default function FoodTrackerPage() {
         </div>
       </section>
 
-      {/* ══ MODEL OUTPUT ══ */}
       {prediction && (
         <section className="pb-20">
           <Reveal className="mx-auto max-w-5xl px-6">
@@ -300,7 +280,6 @@ export default function FoodTrackerPage() {
         </section>
       )}
 
-      {/* ══ MEAL LOG ══ */}
       {mealLog.length > 0 && (
         <section className="pb-24">
           <Reveal className="mx-auto max-w-5xl px-6">
@@ -321,14 +300,12 @@ export default function FoodTrackerPage() {
         </section>
       )}
 
-      {/* ══ Heartbeat divider ══ */}
       <div className="overflow-hidden py-6 flex justify-center">
         <svg width="500" height="60" viewBox="0 0 500 60" className={`glow-pulse ${dark ? 'opacity-[.10]' : 'opacity-[.07]'}`}>
           <path d="M0,30 L120,30 L145,8 L170,52 L195,3 L220,48 L245,30 L500,30" fill="none" stroke={dark ? '#ef4444' : '#dc2626'} strokeWidth="2" strokeDasharray="600" className="pulse-line" />
         </svg>
       </div>
 
-      {/* ══ HOW IT WORKS ══ */}
       <section className="py-24 md:py-32">
         <Reveal className="mx-auto max-w-4xl px-6 text-center">
           <p className={`text-[10px] font-semibold uppercase tracking-[.35em] ${mutedText}`}>How It Works</p>
@@ -351,7 +328,6 @@ export default function FoodTrackerPage() {
         </div>
       </section>
 
-      {/* ══ Footer ══ */}
       <footer className={`border-t ${footerBg}`}>
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 py-12 md:flex-row">
           <div>
@@ -363,7 +339,10 @@ export default function FoodTrackerPage() {
             <span className="cursor-pointer transition hover:text-white">Terms of Service</span>
             <span className="cursor-pointer transition hover:text-white">Contact</span>
           </div>
-          <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>© {new Date().getFullYear()} FitFlow. All rights reserved.</p>
+          <div className="flex flex-col items-center gap-1">
+            <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>© {new Date().getFullYear()} FitFlow. All rights reserved.</p>
+            <span className={`text-[10px] font-semibold uppercase tracking-widest ${dark ? 'text-orange-500/50' : 'text-orange-600/40'}`}>📱 FitFlow App Coming Soon</span>
+          </div>
         </div>
       </footer>
     </div>

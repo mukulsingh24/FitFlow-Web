@@ -7,7 +7,6 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
 type Message = { role: 'user' | 'assistant'; content: string }
 
-/* Hide on auth routes and landing — user must be logged in */
 const HIDDEN_ROUTES = ['/auth/login', '/auth/register', '/auth/forgot', '/auth/verification']
 
 export default function FitBro() {
@@ -56,12 +55,10 @@ export default function FitBro() {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() }
   }
 
-  // Don't render on auth pages or landing
   if (pathname === '/' || HIDDEN_ROUTES.some((r) => pathname.startsWith(r))) return null
 
   return (
     <>
-      {/* ── Floating button — bottom RIGHT ── */}
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label="Open FitBro chat"
@@ -79,7 +76,6 @@ export default function FitBro() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         ) : (
-          /* Dumbbell / fitness icon */
           <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
             <path d="M6.5 6.5a2 2 0 0 1 3 0l8 8a2 2 0 0 1-3 3l-8-8a2 2 0 0 1 0-3z" />
             <path d="M14.5 6.5a2 2 0 0 0-3 0l-8 8a2 2 0 0 0 3 3l8-8a2 2 0 0 0 0-3z" />
@@ -88,7 +84,6 @@ export default function FitBro() {
         )}
       </button>
 
-      {/* ── Chat panel — bottom RIGHT ── */}
       {open && (
         <div className="fixed bottom-24 right-6 z-50 flex h-[500px] w-[380px] flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0a0a0a]/95 shadow-2xl shadow-black/60 backdrop-blur-xl"
           style={{ animation: 'fitBroSlideUp .3s ease-out' }}>
@@ -99,7 +94,6 @@ export default function FitBro() {
             }
           `}</style>
 
-          {/* Header */}
           <div className="flex items-center gap-3 border-b border-white/10 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 px-5 py-3.5">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 text-lg font-bold">
               🏋️
@@ -114,7 +108,6 @@ export default function FitBro() {
             </div>
           </div>
 
-          {/* Messages */}
           <div className="flex-1 space-y-3 overflow-y-auto px-4 py-3 scrollbar-thin scrollbar-thumb-white/10">
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -143,7 +136,6 @@ export default function FitBro() {
             <div ref={bottomRef} />
           </div>
 
-          {/* Input */}
           <div className="border-t border-white/10 bg-black/40 px-4 py-3">
             <div className="flex items-center gap-2 rounded-2xl bg-white/[0.06] px-4 py-2 ring-1 ring-white/5 focus-within:ring-fuchsia-500/40 transition-all">
               <input

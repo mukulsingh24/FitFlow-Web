@@ -19,9 +19,8 @@ export default function Register() {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      // const user = result.user;
       console.log("Registered with Google", result.user);
-      router.push('/dashboard'); // Google users are pre-verification
+      router.push('/dashboard');
     } catch (error: unknown) {
       console.error("Error signing up with Google", error);
       setError(error instanceof Error ? error.message : 'Google sign-up failed');
@@ -39,15 +38,12 @@ export default function Register() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       const user = userCredential.user
       
-      // Update display name
       await updateProfile(user, {
         displayName: `${firstName} ${lastName}`
       })
 
-      // Send verification email
       await sendEmailVerification(user);
 
-      // Redirect to verification
       router.push('/auth/verification')
     } catch (err: unknown) {
       const firebaseErr = err as { code?: string; message?: string }
@@ -63,7 +59,6 @@ export default function Register() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden flex items-center justify-center p-4">
-      {/* Background (Same as Login) */}
       <div className="absolute inset-0 z-0">
          <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -93,7 +88,6 @@ export default function Register() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             
-            {/* Name Fields Row */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-xs font-medium text-white/70 ml-1 uppercase tracking-wide">First Name</label>

@@ -54,7 +54,6 @@ export default function Login() {
               </label>
               <div className="relative group/input">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  {/* User Icon */}
                   <svg className="h-6 w-6 text-white/50 group-focus-within/input:text-indigo-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
@@ -130,7 +129,6 @@ export default function Login() {
             </button>
 
             <button className="relative flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 py-3.5 px-4 text-base font-medium text-white hover:bg-white/10 hover:border-white/20 transition-all duration-200 group">
-              {/* Google Fit Icon (Heart/Health Theme) */}
               <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M17.5858 5.41421C18.3668 4.63317 19.6332 4.63317 20.4142 5.41421C21.1953 6.19526 21.1953 7.46159 20.4142 8.24264L13.4142 15.2426L12 16.6569L10.5858 15.2426L4.93514 9.59199L3.52093 8.17778L4.93514 6.76356C5.71619 5.98251 6.98252 5.98251 7.76357 6.76356L12 11L16.2364 6.76356C16.6094 6.39063 17.2128 6.02102 17.5858 5.41421Z" fill="#EA4335"/>
                   <path opacity="0.8" d="M12 16.6569L13.4142 15.2426L20.4142 8.24263C21.1953 7.46158 21.1953 6.19525 20.4142 5.4142C19.6332 4.63316 18.3668 4.63316 17.5858 5.4142L16.2364 6.76356L12 11L12 16.6569Z" fill="#FBBC04"/>

@@ -24,7 +24,6 @@ export default function ForgotPassword() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden flex items-center justify-center p-4">
-      {/* Background (Same as Login) */}
       <div className="absolute inset-0 z-0">
          <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"

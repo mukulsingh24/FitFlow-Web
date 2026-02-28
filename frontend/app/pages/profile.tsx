@@ -6,7 +6,6 @@ import { onAuthStateChanged, User } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
 import GlassNav from '@/app/components/GlassNav'
 
-/* ── Scroll-reveal ── */
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
@@ -24,7 +23,6 @@ function Reveal({ children, className = '' }: { children: React.ReactNode; class
   return <div ref={ref} className={`transition-all duration-700 ease-out ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-14'} ${className}`}>{children}</div>
 }
 
-/* ── Profile fields type ── */
 type ProfileData = {
   displayName: string
   age: string
@@ -93,10 +91,7 @@ export default function ProfilePage() {
     localStorage.setItem('fitflow_theme', next ? 'dark' : 'light')
   }
 
-  /* ── Theme classes ── */
   const bg = dark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'
-  const navBg = dark ? 'bg-black/80 border-white/10' : 'bg-white/80 border-gray-200'
-  const navText = dark ? 'text-gray-400' : 'text-gray-500'
   const cardBg = dark ? 'border-white/10 bg-white/[.03]' : 'border-gray-200 bg-white'
   const inputBg = dark ? 'bg-white/[.06] border-white/10 text-white placeholder:text-gray-500' : 'bg-gray-100 border-gray-300 text-gray-900 placeholder:text-gray-400'
   const labelText = dark ? 'text-gray-400' : 'text-gray-600'
@@ -115,14 +110,11 @@ export default function ProfilePage() {
         .heartbeat{animation:heartbeat 1.8s ease-in-out infinite}
       `}</style>
 
-      {/* orbs */}
       <div className={`pointer-events-none absolute -left-20 top-40 h-80 w-80 rounded-full bg-purple-500/10 blur-[140px] pulse-slow ${orbOpacity}`} />
       <div className={`pointer-events-none absolute -right-20 bottom-40 h-72 w-72 rounded-full bg-cyan-500/10 blur-[120px] pulse-slow ${orbOpacity}`} />
 
-      {/* ── Nav ── */}
       <GlassNav dark={dark} toggleTheme={toggleTheme} userName={profile.displayName || user?.email?.[0] || 'U'} />
 
-      {/* ── Hero ── */}
       <section className="relative flex flex-col items-center justify-center overflow-hidden px-6 py-20 text-center">
         <div className={`pointer-events-none absolute -right-20 top-10 h-60 w-60 rounded-full ${dark ? 'bg-indigo-500/10' : 'bg-indigo-200/40'} blur-[120px] pulse-slow`} />
         <div className="relative z-10 anim-fadeUp">
@@ -134,11 +126,9 @@ export default function ProfilePage() {
         </div>
       </section>
 
-      {/* ── Profile Form ── */}
       <section className="relative pb-28 md:pb-36">
         <div className="mx-auto max-w-3xl px-6">
 
-          {/* Personal info */}
           <Reveal>
             <div className={`rounded-3xl border p-8 ${cardBg}`}>
               <h3 className="text-lg font-bold uppercase tracking-wide">Personal Information</h3>
@@ -152,7 +142,6 @@ export default function ProfilePage() {
             </div>
           </Reveal>
 
-          {/* Fitness info */}
           <Reveal className="mt-6">
             <div className={`rounded-3xl border p-8 ${cardBg}`}>
               <h3 className="text-lg font-bold uppercase tracking-wide">Fitness &amp; Lifestyle</h3>
@@ -166,7 +155,6 @@ export default function ProfilePage() {
             </div>
           </Reveal>
 
-          {/* Medical */}
           <Reveal className="mt-6">
             <div className={`rounded-3xl border p-8 ${cardBg}`}>
               <h3 className="text-lg font-bold uppercase tracking-wide">Medical Notes</h3>
@@ -180,7 +168,6 @@ export default function ProfilePage() {
             </div>
           </Reveal>
 
-          {/* Save */}
           <Reveal className="mt-8 text-center">
             <button onClick={handleSave} className={`rounded-full px-10 py-3.5 text-base font-bold transition hover:scale-105 ${accentBtn}`}>
               {saved ? '✓ Saved!' : 'Save Profile'}
@@ -189,7 +176,6 @@ export default function ProfilePage() {
         </div>
       </section>
 
-      {/* ── Footer ── */}
       <footer className={`border-t ${dark ? 'border-white/10 bg-white/[.02]' : 'border-gray-200 bg-gray-100'}`}>
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 py-12 md:flex-row">
           <div>
@@ -203,7 +189,6 @@ export default function ProfilePage() {
   )
 }
 
-/* ── Reusable input field ── */
 function Field({ label, value, onChange, placeholder = '', type = 'text', labelText, inputBg }: {
   label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string; dark: boolean; labelText: string; inputBg: string
 }) {
@@ -215,7 +200,6 @@ function Field({ label, value, onChange, placeholder = '', type = 'text', labelT
   )
 }
 
-/* ── Reusable select field ── */
 function SelectField({ label, value, onChange, options, labelText, inputBg }: {
   label: string; value: string; onChange: (v: string) => void; options: string[]; dark: boolean; labelText: string; inputBg: string
 }) {

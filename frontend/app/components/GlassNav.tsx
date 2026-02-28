@@ -75,6 +75,16 @@ const NAV_ITEMS = [
       </svg>
     ),
   },
+  {
+    label: 'App',
+    path: '#app',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="h-[22px] w-[22px]">
+        <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+        <line x1="12" y1="18" x2="12.01" y2="18" />
+      </svg>
+    ),
+  },
 ]
 
 export default function GlassNav({ dark, toggleTheme, userName }: Props) {
@@ -82,6 +92,7 @@ export default function GlassNav({ dark, toggleTheme, userName }: Props) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [showAppModal, setShowAppModal] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -112,7 +123,6 @@ export default function GlassNav({ dark, toggleTheme, userName }: Props) {
         .nav-pop { animation: navPop .35s cubic-bezier(.34,1.56,.64,1) both; }
       `}</style>
 
-      {/* Desktop: Floating liquid glass pill */}
       <nav
         className={`sticky top-3 z-50 mx-auto mt-3 hidden max-w-4xl items-center justify-between gap-2 rounded-[1.75rem] border px-3 py-2 transition-all duration-700 md:flex nav-pop ${
           scrolled ? 'shadow-2xl' : 'shadow-lg'
@@ -122,10 +132,8 @@ export default function GlassNav({ dark, toggleTheme, userName }: Props) {
             : 'border-white/40 bg-gradient-to-b from-white/70 to-white/50 shadow-black/[0.06] backdrop-blur-3xl'
         }`}
       >
-        {/* Liquid shine overlay */}
         <div className="pointer-events-none absolute inset-0 rounded-[1.75rem] liquid-shine" />
 
-        {/* Logo */}
         <h1
           onClick={() => router.push('/dashboard')}
           className={`relative z-10 cursor-pointer pl-3 text-lg font-black uppercase tracking-widest transition-all duration-300 hover:scale-105 ${dark ? 'text-white' : 'text-black'}`}
@@ -133,14 +141,14 @@ export default function GlassNav({ dark, toggleTheme, userName }: Props) {
           FitFlow
         </h1>
 
-        {/* Nav items — icon + label */}
         <div className="relative z-10 flex items-center gap-0.5">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.path
+            const isApp = item.path === '#app'
             return (
               <button
                 key={item.path}
-                onClick={() => router.push(item.path)}
+                onClick={() => isApp ? setShowAppModal(true) : router.push(item.path)}
                 className={`group relative flex flex-col items-center gap-0.5 rounded-2xl px-4 py-1.5 transition-all duration-300 hover:scale-[1.15] ${
                   isActive
                     ? dark
@@ -160,9 +168,7 @@ export default function GlassNav({ dark, toggleTheme, userName }: Props) {
           })}
         </div>
 
-        {/* Right side controls */}
         <div className="relative z-10 flex items-center gap-1 pr-1">
-          {/* Animated sun/moon toggle */}
           <button
             onClick={toggleTheme}
             className={`relative flex h-10 w-10 items-center justify-center rounded-2xl transition-all duration-300 hover:scale-[1.2] ${
@@ -185,7 +191,6 @@ export default function GlassNav({ dark, toggleTheme, userName }: Props) {
             )}
           </button>
 
-          {/* Log Out */}
           <button
             onClick={handleLogout}
             className={`rounded-2xl px-3 py-2 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:scale-110 ${
@@ -195,7 +200,6 @@ export default function GlassNav({ dark, toggleTheme, userName }: Props) {
             Log Out
           </button>
 
-          {/* Avatar — opens Profile */}
           <div
             onClick={() => router.push('/profile')}
             className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-2xl font-bold text-sm transition-all duration-300 hover:scale-[1.2] hover:shadow-lg ${
@@ -209,7 +213,6 @@ export default function GlassNav({ dark, toggleTheme, userName }: Props) {
         </div>
       </nav>
 
-      {/* Mobile: Floating liquid glass bar */}
       <nav className={`sticky top-2 z-50 mx-3 mt-2 flex items-center justify-between rounded-2xl border px-3 py-2 md:hidden transition-all duration-700 nav-pop ${
         dark
           ? 'border-white/[0.10] bg-gradient-to-b from-white/[0.07] to-white/[0.03] shadow-lg shadow-black/30 backdrop-blur-3xl'
@@ -238,7 +241,6 @@ export default function GlassNav({ dark, toggleTheme, userName }: Props) {
         </div>
       </nav>
 
-      {/* Mobile dropdown */}
       {mobileOpen && (
         <div className={`sticky top-[62px] z-40 mx-3 mt-1 rounded-2xl border p-2 backdrop-blur-3xl md:hidden nav-pop ${
           dark ? 'border-white/[0.08] bg-black/80' : 'border-white/40 bg-white/80'
@@ -246,10 +248,11 @@ export default function GlassNav({ dark, toggleTheme, userName }: Props) {
           <div className="pointer-events-none absolute inset-0 rounded-2xl liquid-shine" />
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.path
+            const isApp = item.path === '#app'
             return (
               <button
                 key={item.path}
-                onClick={() => { router.push(item.path); setMobileOpen(false) }}
+                onClick={() => { if (isApp) { setShowAppModal(true) } else { router.push(item.path) }; setMobileOpen(false) }}
                 className={`relative z-10 flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold transition-all ${
                   isActive
                     ? dark ? 'bg-white/10 text-white' : 'bg-black/10 text-black'
@@ -280,6 +283,52 @@ export default function GlassNav({ dark, toggleTheme, userName }: Props) {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-[22px] w-[22px]"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>
             Log Out
           </button>
+        </div>
+      )}
+
+      {showAppModal && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 backdrop-blur-md p-4" onClick={() => setShowAppModal(false)}>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`relative w-full max-w-md rounded-3xl border p-8 text-center shadow-2xl ${dark ? 'border-white/10 bg-gray-950' : 'border-gray-200 bg-white'}`}
+            style={{ animation: 'navPop .35s cubic-bezier(.34,1.56,.64,1) both' }}
+          >
+            <button onClick={() => setShowAppModal(false)} className={`absolute top-4 right-4 h-8 w-8 rounded-full flex items-center justify-center transition hover:scale-110 ${dark ? 'hover:bg-white/10 text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}>
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+
+            <div className="mb-4 inline-block text-7xl" style={{ animation: 'float 4s ease-in-out infinite' }}>📱</div>
+            <h3 className="text-2xl font-black uppercase tracking-tight">FitFlow App</h3>
+            <div className="mt-2 inline-block rounded-full bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-1 text-xs font-bold text-white uppercase tracking-widest">
+              Coming Soon
+            </div>
+
+            <p className={`mt-6 text-sm leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
+              We&apos;re building something extraordinary. The <strong className={dark ? 'text-white' : 'text-black'}>FitFlow Mobile App</strong> will bring AI-powered fitness coaching right to your pocket — step tracking, form correction, meal scanning, and smart insights, all in one app.
+            </p>
+
+            <div className={`mt-6 rounded-2xl border p-5 text-left ${dark ? 'border-white/5 bg-white/[.02]' : 'border-gray-100 bg-gray-50'}`}>
+              <p className={`text-[10px] font-semibold uppercase tracking-[.3em] mb-3 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>What&apos;s Coming</p>
+              <div className="space-y-2">
+                {['Auto step & activity tracking', 'AI food scanner on the go', 'Push notification reminders', 'Offline workout mode', 'Wearable device sync'].map(f => (
+                  <div key={f} className={`flex items-center gap-2 text-sm ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <span className="text-green-400">✓</span> {f}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <p className="mt-6 text-base font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent italic">
+              &quot;Your fitness revolution is loading — stay tuned!&quot;
+            </p>
+
+            <button
+              onClick={() => setShowAppModal(false)}
+              className={`mt-6 w-full rounded-2xl py-3 font-bold transition-all hover:scale-105 ${dark ? 'bg-white text-black hover:bg-gray-200' : 'bg-black text-white hover:bg-gray-800'}`}
+            >
+              Got it!
+            </button>
+          </div>
         </div>
       )}
     </>

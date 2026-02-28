@@ -2,7 +2,6 @@ const Groq = require('groq-sdk');
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-// Configurable via .env — must be a vision-capable model on Groq
 const MODEL_NAME = process.env.GROQ_MODEL || 'meta-llama/llama-4-scout-17b-16e-instruct';
 const MAX_RETRIES = Number(process.env.GROQ_MAX_RETRIES) || 3;
 
@@ -27,16 +26,10 @@ Rules:
 - If the image does not contain food, set foodName to "Not Food", calories to 0, confidence to 0, and explain in detailedAnalysis.
 - Return ONLY valid JSON. No extra text.`;
 
-/**
- * Sleep helper for retry backoff
- */
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/**
- * Call Groq with automatic retry + exponential backoff for 429 / 503 errors
- */
 async function callGroqWithRetry(imageBase64, mimeType) {
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
@@ -72,16 +65,11 @@ async function callGroqWithRetry(imageBase64, mimeType) {
         continue;
       }
 
-      // Not retryable, or last attempt — rethrow
       throw err;
     }
   }
 }
 
-/**
- * POST /api/food/analyze
- * Accepts a base64-encoded image and returns nutrition analysis from Groq.
- */
 async function analyzeFood(req, res) {
   try {
     const { imageBase64, mimeType } = req.body;
@@ -92,7 +80,6 @@ async function analyzeFood(req, res) {
 
     let text = await callGroqWithRetry(imageBase64, mimeType);
 
-    // Strip markdown code fences if the model wraps the response
     text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
 
     const parsed = JSON.parse(text);
@@ -103,7 +90,6 @@ async function analyzeFood(req, res) {
 
     const status = err.status || err.statusCode;
 
-    // Rate-limit — tell the user clearly
     if (status === 429) {
       return res.status(429).json({
         error: 'Please try again shortly.',
@@ -111,7 +97,6 @@ async function analyzeFood(req, res) {
       });
     }
 
-    // JSON parse failure
     if (err instanceof SyntaxError) {
       return res.status(500).json({
         error: 'Failed to parse response as JSON',

@@ -1,12 +1,12 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
 import GlassNav from '../components/GlassNav'
 
-/* ── Scroll-reveal ── */
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
@@ -24,7 +24,6 @@ function Reveal({ children, className = '' }: { children: React.ReactNode; class
   return <div ref={ref} className={`transition-all duration-700 ease-out ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-14'} ${className}`}>{children}</div>
 }
 
-/* ═══ Exercise catalogue ═══ */
 const EXERCISES = [
   { id: 'pushups', name: 'Push-Ups', emoji: '💪', muscle: 'Chest · Triceps · Core', difficulty: 'Beginner', color: 'from-red-500/20 to-orange-500/20', border: 'border-red-500/30', accent: 'text-red-400',
     tips: ['Keep your body in a straight line from head to heels.', 'Hands should be slightly wider than shoulder-width.', 'Lower until your chest nearly touches the ground.', 'Don\'t let your hips sag or pike up.'] },
@@ -46,7 +45,6 @@ const EXERCISES = [
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
-/* ═══════ FORM CHECKER PAGE ═══════ */
 export default function FormCheckerPage() {
   const router = useRouter()
   const [dark, setDark] = useState(true)
@@ -72,12 +70,10 @@ export default function FormCheckerPage() {
       if (p) { const d = JSON.parse(p); if (d.displayName) setProfileName(d.displayName) }
     } catch { /* ignore */ }
     return () => { unsub(); stopCamera() }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router])
 
   const toggleTheme = () => { const n = !dark; setDark(n); localStorage.setItem('fitflow_theme', n ? 'dark' : 'light') }
 
-  /* Camera helpers */
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 640, height: 480 } })
@@ -121,14 +117,18 @@ export default function FormCheckerPage() {
     setFeedback(null)
     setFeedbackError(null)
     try {
-      // Convert preview to base64
-      let base64: string
+      let base64Data: string
+      let mimeType = 'image/jpeg'
       if (previewUrl.startsWith('data:')) {
-        base64 = previewUrl.split(',')[1]
+        const parts = previewUrl.split(',')
+        base64Data = parts[1]
+        const mimeMatch = parts[0].match(/data:(.*?);/)
+        if (mimeMatch) mimeType = mimeMatch[1]
       } else {
         const resp = await fetch(previewUrl)
         const blob = await resp.blob()
-        base64 = await new Promise<string>((resolve, reject) => {
+        mimeType = blob.type || 'image/jpeg'
+        base64Data = await new Promise<string>((resolve, reject) => {
           const reader = new FileReader()
           reader.onload = () => resolve((reader.result as string).split(',')[1])
           reader.onerror = reject
@@ -136,17 +136,18 @@ export default function FormCheckerPage() {
         })
       }
 
-      const res = await fetch(`${API_BASE}/api/chat`, {
+      const res = await fetch(`${API_BASE}/api/form/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: `I'm doing ${selectedExercise.name}. Please analyze my exercise form/posture from this image. Give me specific feedback on what I'm doing right and what needs improvement. Be detailed about body alignment, joint angles, and common mistakes you can see. Format your response with clear sections: ✅ What's Good, ⚠️ What to Fix, and 💡 Pro Tips.`,
-          history: [],
+          imageBase64: base64Data,
+          mimeType: mimeType,
+          exercise: selectedExercise.name,
         }),
       })
       const data = await res.json()
       if (data.success) {
-        setFeedback(data.reply)
+        setFeedback(data.feedback)
       } else {
         setFeedbackError(data.error || 'Analysis failed')
       }
@@ -170,7 +171,6 @@ export default function FormCheckerPage() {
     setMode('select')
   }
 
-  /* ── Theme ── */
   const bg = dark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'
   const cardBg = dark ? 'border-white/10 bg-white/[.03]' : 'border-gray-200 bg-white'
   const mutedText = dark ? 'text-gray-500' : 'text-gray-400'
@@ -192,21 +192,16 @@ export default function FormCheckerPage() {
         .shimmer{background:linear-gradient(90deg,transparent,rgba(255,255,255,.05),transparent);background-size:200% 100%;animation:shimmer 2s linear infinite}
       `}</style>
 
-      {/* Orbs */}
       <div className={`pointer-events-none absolute -left-20 top-40 h-80 w-80 rounded-full bg-violet-500/10 blur-[140px] pulse-slow ${orbOpacity}`} />
       <div className={`pointer-events-none absolute -right-20 bottom-40 h-72 w-72 rounded-full bg-cyan-500/10 blur-[120px] pulse-slow ${orbOpacity}`} />
 
-      {/* Nav */}
       <GlassNav dark={dark} toggleTheme={toggleTheme} userName={userName} />
 
-      {/* Hidden elements */}
       <canvas ref={canvasRef} className="hidden" />
       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
 
-      {/* ═══ EXERCISE SELECTION MODE ═══ */}
       {mode === 'select' && (
         <>
-          {/* Hero */}
           <section className="relative flex flex-col items-center justify-center overflow-hidden px-6 py-16 text-center">
             <div className={`pointer-events-none absolute -right-20 top-10 h-60 w-60 rounded-full ${dark ? 'bg-violet-500/10' : 'bg-violet-200/40'} blur-[120px] pulse-slow`} />
             <div className="relative z-10 anim-fadeUp">
@@ -222,7 +217,6 @@ export default function FormCheckerPage() {
             </div>
           </section>
 
-          {/* Exercise Grid */}
           <section className="pb-20">
             <div className="mx-auto max-w-6xl px-6">
               <Reveal>
@@ -238,7 +232,6 @@ export default function FormCheckerPage() {
                       className={`group relative w-full overflow-hidden rounded-3xl border p-6 text-left transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_12px_60px_-10px_rgba(255,255,255,.06)] ${cardBg} ${ex.border} hover:${ex.border}`}
                       style={{ animationDelay: `${i * 60}ms` }}
                     >
-                      {/* Gradient overlay */}
                       <div className={`absolute inset-0 bg-gradient-to-br ${ex.color} opacity-0 transition-opacity duration-500 group-hover:opacity-100`} />
 
                       <div className="relative z-10">
@@ -256,7 +249,6 @@ export default function FormCheckerPage() {
                         </span>
                       </div>
 
-                      {/* Hover arrow */}
                       <div className={`absolute bottom-4 right-4 flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 ${dark ? 'bg-white/10' : 'bg-black/10'}`}>
                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                       </div>
@@ -269,17 +261,14 @@ export default function FormCheckerPage() {
         </>
       )}
 
-      {/* ═══ CAPTURE MODE ═══ */}
       {mode === 'capture' && selectedExercise && (
         <section className="pb-20">
           <div className="mx-auto max-w-5xl px-6 pt-8">
-            {/* Back button */}
             <button onClick={goBack} className={`mb-6 flex items-center gap-2 text-sm font-medium transition hover:underline ${dark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-black'}`}>
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
               Back to exercises
             </button>
 
-            {/* Exercise header */}
             <div className="anim-fadeUp text-center">
               <span className="text-5xl">{selectedExercise.emoji}</span>
               <h2 className="mt-3 text-3xl font-black uppercase md:text-5xl">
@@ -289,7 +278,6 @@ export default function FormCheckerPage() {
             </div>
 
             <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-5">
-              {/* ── Left: Camera / Upload panel ── */}
               <div className={`lg:col-span-3 rounded-3xl border p-6 ${cardBg}`}>
                 {!previewUrl && !cameraActive && (
                   <>
@@ -297,7 +285,6 @@ export default function FormCheckerPage() {
                     <p className={`mt-1 text-sm ${mutedText}`}>Choose how you want to share your exercise form</p>
 
                     <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      {/* Open Camera */}
                       <button
                         onClick={startCamera}
                         className={`group flex flex-col items-center gap-3 rounded-2xl border p-8 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 ${
@@ -315,7 +302,6 @@ export default function FormCheckerPage() {
                         <span className={`text-xs ${mutedText}`}>Take a live photo</span>
                       </button>
 
-                      {/* Upload Image */}
                       <button
                         onClick={() => fileInputRef.current?.click()}
                         className={`group flex flex-col items-center gap-3 rounded-2xl border p-8 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 ${
@@ -336,12 +322,10 @@ export default function FormCheckerPage() {
                   </>
                 )}
 
-                {/* Camera view */}
                 {cameraActive && (
                   <div className="space-y-4">
                     <div className="relative overflow-hidden rounded-2xl bg-black">
                       <video ref={videoRef} autoPlay playsInline muted className="w-full rounded-2xl" />
-                      {/* Crosshair overlay */}
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div className="h-48 w-48 rounded-3xl border-2 border-white/20" />
                       </div>
@@ -357,11 +341,10 @@ export default function FormCheckerPage() {
                   </div>
                 )}
 
-                {/* Preview */}
                 {previewUrl && (
                   <div className="space-y-4">
                     <div className="relative overflow-hidden rounded-2xl">
-                      <img src={previewUrl} alt="Your posture" className="w-full rounded-2xl" />
+                      <Image src={previewUrl} alt="Your posture" width={800} height={600} className="w-full rounded-2xl" />
                       {analyzing && (
                         <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm rounded-2xl">
                           <div className="flex flex-col items-center gap-3">
@@ -384,7 +367,6 @@ export default function FormCheckerPage() {
                   </div>
                 )}
 
-                {/* AI Feedback */}
                 {feedback && (
                   <div className={`mt-6 rounded-2xl border p-6 ${dark ? 'border-violet-500/20 bg-violet-500/5' : 'border-violet-200 bg-violet-50'}`}>
                     <h4 className={`text-sm font-bold uppercase tracking-wide ${dark ? 'text-violet-400' : 'text-violet-600'}`}>AI Form Feedback</h4>
@@ -401,7 +383,6 @@ export default function FormCheckerPage() {
                 )}
               </div>
 
-              {/* ── Right: Tips panel ── */}
               <div className={`lg:col-span-2 rounded-3xl border p-6 ${cardBg}`}>
                 <h3 className="text-lg font-bold uppercase tracking-wide">Perfect Form Tips</h3>
                 <p className={`mt-1 text-sm ${mutedText}`}>Key points for {selectedExercise.name}</p>
@@ -417,7 +398,6 @@ export default function FormCheckerPage() {
                   ))}
                 </div>
 
-                {/* Difficulty badge */}
                 <div className={`mt-6 rounded-xl border p-4 text-center ${dark ? 'border-white/5 bg-white/[.02]' : 'border-gray-200 bg-gray-50'}`}>
                   <p className={`text-xs ${mutedText}`}>Difficulty</p>
                   <p className={`mt-1 font-bold ${selectedExercise.accent}`}>{selectedExercise.difficulty}</p>
@@ -429,7 +409,6 @@ export default function FormCheckerPage() {
         </section>
       )}
 
-      {/* Footer */}
       <footer className={`border-t ${footerBg}`}>
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 py-12 md:flex-row">
           <div>

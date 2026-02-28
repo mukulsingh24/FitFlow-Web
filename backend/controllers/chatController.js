@@ -25,10 +25,6 @@ Rules:
 - Never give medical diagnoses. If someone describes pain or injury, suggest they see a doctor.
 - Be inclusive — fitness is for everyone regardless of level, body type, or background.`;
 
-/**
- * POST /api/chat
- * Accepts { message, history } and returns a chat response from Groq.
- */
 async function chatWithFitBro(req, res) {
   try {
     const { message, history = [] } = req.body;
@@ -37,10 +33,9 @@ async function chatWithFitBro(req, res) {
       return res.status(400).json({ error: 'message is required' });
     }
 
-    // Build messages array: system prompt + conversation history + new user message
     const messages = [
       { role: 'system', content: SYSTEM_PROMPT },
-      ...history.slice(-20), // keep last 20 messages for context window
+      ...history.slice(-20),
       { role: 'user', content: message },
     ];
 

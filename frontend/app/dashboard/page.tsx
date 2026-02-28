@@ -2,11 +2,10 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { onAuthStateChanged, signOut, User } from 'firebase/auth'
+import { onAuthStateChanged, User } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
 import GlassNav from '@/app/components/GlassNav'
 
-/* ───── FAQ data ───── */
 const faqs = [
   { q: 'How does FitFlow detect calories from food images?', a: 'FitFlow uses a trained computer vision model to identify the food item from an image and maps it to a nutritional database to estimate calories per serving.' },
   { q: 'Is the calorie estimation 100% accurate?', a: 'No image-based system can guarantee exact calorie measurement. FitFlow provides AI-assisted estimates to reduce manual logging errors and improve tracking accuracy.' },
@@ -18,7 +17,6 @@ const faqs = [
   { q: 'Who is FitFlow designed for?', a: 'FitFlow is designed for students, working professionals, and anyone looking for affordable, AI-powered fitness guidance.' },
 ]
 
-/* ───── Feature cards ───── */
 const features = [
   { icon: '📸', title: 'Calorie Detection via Food Image', desc: 'Snap a photo of your meal — our computer-vision model identifies the dish and estimates calories, protein, carbs and fats instantly.' },
   { icon: '🏋️', title: 'Real-Time Form Correction', desc: 'Camera-based pose estimation analyses your body during exercise and gives live feedback to prevent injury and maximise gains.' },
@@ -28,7 +26,6 @@ const features = [
   { icon: '🌍', title: 'Regional Food Intelligence', desc: 'Supports Indian and regional food datasets so your local meals are recognised accurately — not just Western diets.' },
 ]
 
-/* ───── Stats ribbon ───── */
 const stats = [
   { label: 'Calories Burned', value: '840 kcal', accent: 'text-orange-400' },
   { label: 'Hydration', value: '2.1 L', accent: 'text-cyan-400' },
@@ -36,7 +33,6 @@ const stats = [
   { label: 'Streak', value: '9 days', accent: 'text-amber-400' },
 ]
 
-/* ───── Scroll-reveal hook ───── */
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
@@ -54,7 +50,6 @@ function Reveal({ children, className = '' }: { children: React.ReactNode; class
   return <div ref={ref} className={`transition-all duration-700 ease-out ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-14'} ${className}`}>{children}</div>
 }
 
-/* ═══════════════ DASHBOARD ═══════════════ */
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -74,7 +69,6 @@ export default function Dashboard() {
       const p = localStorage.getItem('fitflow_profile')
       if (p) { const d = JSON.parse(p); if (d.displayName) setProfileName(d.displayName) }
     } catch { /* ignore */ }
-    // listen for storage changes from profile page
     const onStorage = (e: StorageEvent) => {
       if (e.key === 'fitflow_profile' && e.newValue) {
         try { const d = JSON.parse(e.newValue); if (d.displayName) setProfileName(d.displayName) } catch { /* */ }
@@ -87,12 +81,8 @@ export default function Dashboard() {
 
   const toggleTheme = () => { const n = !dark; setDark(n); localStorage.setItem('fitflow_theme', n ? 'dark' : 'light') }
   const userName = profileName || user?.displayName || user?.email?.split('@')[0] || 'Athlete'
-  const handleLogout = async () => { try { await signOut(auth); router.push('/auth/login') } catch (e) { console.error(e) } }
 
-  /* ── Theme vars ── */
   const bg = dark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'
-  const navBg = dark ? 'bg-black/80 border-white/10' : 'bg-white/80 border-gray-200'
-  const navText = dark ? 'text-gray-400' : 'text-gray-500'
   const cardBg = dark ? 'border-white/10 bg-white/[.03]' : 'border-gray-200 bg-white'
   const cardHover = dark ? 'hover:bg-white/[.06] hover:border-white/20' : 'hover:bg-gray-50 hover:border-gray-300'
   const mutedText = dark ? 'text-gray-500' : 'text-gray-400'
@@ -113,7 +103,6 @@ export default function Dashboard() {
   return (
     <div className={`relative w-full ${bg} selection:bg-white/20`}>
 
-      {/* ── keyframes ── */}
       <style jsx global>{`
         @keyframes pulseLine{0%{stroke-dashoffset:1000}100%{stroke-dashoffset:0}}
         @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
@@ -127,17 +116,13 @@ export default function Dashboard() {
         .glow-pulse{animation:glowPulse 2s ease-in-out infinite}
       `}</style>
 
-      {/* ══ Glass Nav ══ */}
       <GlassNav dark={dark} toggleTheme={toggleTheme} userName={userName} />
 
-      {/* ══ HERO ══ */}
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 text-center">
         <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop')" }} />
         <div className={`absolute inset-0 bg-gradient-to-b ${overlayGrad}`} />
-        {/* floating orbs */}
         <div className={`pointer-events-none absolute -left-20 top-1/4 h-96 w-96 rounded-full bg-orange-500/10 blur-[140px] pulse-slow ${orbOpacity}`} />
         <div className={`pointer-events-none absolute -right-20 bottom-1/4 h-80 w-80 rounded-full bg-blue-500/10 blur-[120px] pulse-slow ${orbOpacity}`} />
-        {/* Heartbeat pulse SVG (replaces dumbbell) */}
         <div className="pointer-events-none absolute top-1/2 -translate-y-1/2 w-full overflow-hidden flex justify-center">
           <svg width="900" height="120" viewBox="0 0 900 120" className={`glow-pulse ${dark ? 'opacity-[.15]' : 'opacity-[.10]'}`}>
             <path d="M0,60 L200,60 L230,20 L260,100 L290,10 L320,90 L350,60 L500,60 L530,25 L560,95 L590,15 L620,85 L650,60 L900,60" fill="none" stroke={dark ? '#ef4444' : '#dc2626'} strokeWidth="3" strokeDasharray="1000" className="pulse-line" />
@@ -169,7 +154,6 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* ══ STATS RIBBON ══ */}
       <Reveal>
         <section className={`border-y ${statBorder}`}>
           <div className="mx-auto grid max-w-6xl grid-cols-2 md:grid-cols-4">
@@ -183,7 +167,6 @@ export default function Dashboard() {
         </section>
       </Reveal>
 
-      {/* ══ FEATURES ══ */}
       <section className="relative overflow-hidden py-28 md:py-36">
         <div className={`pointer-events-none absolute -left-32 top-10 h-80 w-80 rounded-full bg-orange-500/[.07] blur-[140px] ${orbOpacity}`} />
         <div className={`pointer-events-none absolute -right-32 bottom-10 h-96 w-96 rounded-full bg-purple-500/[.07] blur-[140px] ${orbOpacity}`} />
@@ -212,12 +195,10 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* ══ PARALLAX BANNER ══ */}
       <section className="relative flex min-h-[75vh] items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-fixed bg-center opacity-25" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=2070&auto=format&fit=crop')" }} />
+        <div className="absolute inset-0 bg-cover bg-fixed bg-center opacity-25" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=2070&auto=format&fit=crop')" }} />
         <div className={`absolute inset-0 bg-gradient-to-b ${dark ? 'from-black via-transparent to-black' : 'from-gray-50 via-transparent to-gray-50'}`} />
 
-        {/* Heartbeat pulse banner (replaces dumbbell) */}
         <div className="pointer-events-none absolute bottom-10 w-full overflow-hidden flex justify-center">
           <svg width="600" height="80" viewBox="0 0 600 80" className={`glow-pulse ${dark ? 'opacity-[.08]' : 'opacity-[.06]'}`}>
             <path d="M0,40 L150,40 L175,10 L200,70 L225,5 L250,65 L275,40 L600,40" fill="none" stroke={dark ? '#ef4444' : '#dc2626'} strokeWidth="2.5" strokeDasharray="800" className="pulse-line" />
@@ -231,7 +212,6 @@ export default function Dashboard() {
         </Reveal>
       </section>
 
-      {/* ══ USP ══ */}
       <section className="py-28 md:py-36">
         <Reveal className="mx-auto max-w-5xl px-6">
           <div className={`rounded-[2rem] border p-10 md:p-16 ${cardBg}`} style={{ transformStyle: 'preserve-3d' }}>
@@ -255,14 +235,12 @@ export default function Dashboard() {
         </Reveal>
       </section>
 
-      {/* ══ Heartbeat divider ══ */}
       <div className="overflow-hidden py-6 flex justify-center">
         <svg width="500" height="60" viewBox="0 0 500 60" className={`glow-pulse ${dark ? 'opacity-[.10]' : 'opacity-[.07]'}`}>
           <path d="M0,30 L120,30 L145,8 L170,52 L195,3 L220,48 L245,30 L500,30" fill="none" stroke={dark ? '#ef4444' : '#dc2626'} strokeWidth="2" strokeDasharray="600" className="pulse-line" />
         </svg>
       </div>
 
-      {/* ══ FAQ ══ */}
       <section className="py-28 md:py-36">
         <Reveal className="mx-auto max-w-3xl px-6 text-center">
           <p className={`text-[10px] font-semibold uppercase tracking-[.35em] ${mutedText}`}>Got Questions?</p>
@@ -289,7 +267,29 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* ══ Footer ══ */}
+      <Reveal>
+        <section className="py-16 md:py-20">
+          <div className={`mx-auto max-w-5xl px-6`}>
+            <div className={`relative overflow-hidden rounded-[2rem] border p-10 md:p-14 text-center ${dark ? 'border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 via-green-500/5 to-teal-500/5' : 'border-emerald-200 bg-gradient-to-br from-emerald-50 to-green-50'}`}>
+              <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,.04) 40%, rgba(255,255,255,.08) 50%, rgba(255,255,255,.04) 60%, transparent 100%)', backgroundSize: '200% 100%', animation: 'liquidShine 4s ease-in-out infinite' }} />
+              <div className="relative z-10">
+                <span className="inline-block text-6xl" style={{ animation: 'float 4s ease-in-out infinite' }}>📱</span>
+                <h3 className="mt-4 text-3xl font-black uppercase md:text-4xl">
+                  FitFlow App — <span className="bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">Coming Soon</span>
+                </h3>
+                <p className={`mt-4 mx-auto max-w-xl text-sm ${bodyText}`}>
+                  Take your fitness everywhere. Auto step tracking, AI food scanner, workout logging, push reminders & offline mode — all in one powerful mobile app.
+                </p>
+                <button onClick={() => router.push('/steps')} className="mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-green-500/20 transition-all hover:scale-105 hover:shadow-green-500/40">
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2" /><line x1="12" y1="18" x2="12.01" y2="18" /></svg>
+                  Learn More
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </Reveal>
+
       <footer className={`border-t ${footerBg}`}>
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 py-12 md:flex-row">
           <div>
@@ -301,9 +301,11 @@ export default function Dashboard() {
             <span className="cursor-pointer transition hover:text-white">Terms of Service</span>
             <span className="cursor-pointer transition hover:text-white">Contact</span>
           </div>
-          <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>© {new Date().getFullYear()} FitFlow. All rights reserved.</p>
+          <div className="flex flex-col items-center gap-1">
+            <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>© {new Date().getFullYear()} FitFlow. All rights reserved.</p>
+            <span className={`text-[10px] font-semibold uppercase tracking-widest ${dark ? 'text-emerald-500/60' : 'text-emerald-600/50'}`}>📱 Mobile App Coming Soon</span>
+          </div>
         </div>
-      </footer>
-    </div>
+      </footer>    </div>
   )
 }

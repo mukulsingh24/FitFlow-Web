@@ -20,17 +20,13 @@ export default function Verification() {
              router.push('/dashboard')
         }
       } else {
-         // If no user is logged in, redirect to login
-         // router.push('/auth/login')
       }
     }
 
-    // Check immediately and then every 3 seconds
     checkVerification();
     const interval = setInterval(checkVerification, 3000);
     return () => clearInterval(interval);
   }, [router]);
-
 
   const handleResend = async () => {
     if (!auth.currentUser) return;
@@ -67,7 +63,6 @@ export default function Verification() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden flex items-center justify-center p-4">
-      {/* Background (Same as Login) */}
       <div className="absolute inset-0 z-0">
          <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -95,7 +90,6 @@ export default function Verification() {
           <div className="space-y-6">
             
             <div className="flex flex-col items-center justify-center space-y-4">
-                {/* 3D-style Email Illustration */}
                 <div className="relative w-32 h-32 flex items-center justify-center">
                   <div className="absolute inset-0 bg-indigo-500/20 blur-2xl rounded-full animate-pulse"></div>
                   <svg className="relative w-24 h-24 drop-shadow-2xl transform hover:scale-105 transition-transform duration-300" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -6,7 +6,6 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
 import GlassNav from '@/app/components/GlassNav'
 
-/* ── Scroll-reveal ── */
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
@@ -24,7 +23,6 @@ function Reveal({ children, className = '' }: { children: React.ReactNode; class
   return <div ref={ref} className={`transition-all duration-700 ease-out ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-14'} ${className}`}>{children}</div>
 }
 
-/* ── Preset cup sizes ── */
 const CUP_SIZES = [
   { label: 'Small', ml: 150, icon: '🥤' },
   { label: 'Medium', ml: 250, icon: '🥛' },
@@ -34,11 +32,10 @@ const CUP_SIZES = [
 
 type WaterEntry = { ml: number; time: string }
 
-/* ═══════ WATER TRACKER PAGE ═══════ */
 export default function WaterTrackerPage() {
   const router = useRouter()
   const [dark, setDark] = useState(true)
-  const [goalMl, setGoalMl] = useState(3000) // default 3L
+  const [goalMl, setGoalMl] = useState(3000)
   const [entries, setEntries] = useState<WaterEntry[]>([])
   const [customMl, setCustomMl] = useState('')
   const [showGoalEdit, setShowGoalEdit] = useState(false)
@@ -49,12 +46,10 @@ export default function WaterTrackerPage() {
     const unsub = onAuthStateChanged(auth, (cur) => { if (!cur) router.push('/auth/login') })
     const t = localStorage.getItem('fitflow_theme')
     if (t === 'light') setDark(false)
-    // Restore water data from localStorage
     try {
       const saved = localStorage.getItem('fitflow_water_today')
       if (saved) {
         const parsed = JSON.parse(saved)
-        // Only restore if same day
         if (parsed.date === new Date().toDateString()) {
           setEntries(parsed.entries || [])
         }
@@ -67,7 +62,6 @@ export default function WaterTrackerPage() {
     return () => unsub()
   }, [router])
 
-  // Persist entries whenever they change
   useEffect(() => {
     localStorage.setItem('fitflow_water_today', JSON.stringify({ date: new Date().toDateString(), entries }))
   }, [entries])
@@ -97,7 +91,6 @@ export default function WaterTrackerPage() {
   const progress = Math.min((totalMl / goalMl) * 100, 100)
   const glasses = Math.floor(totalMl / 250)
 
-  /* ── Theme ── */
   const bg = dark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'
   const cardBg = dark ? 'border-white/10 bg-white/[.03]' : 'border-gray-200 bg-white'
   const mutedText = dark ? 'text-gray-500' : 'text-gray-400'
@@ -120,14 +113,11 @@ export default function WaterTrackerPage() {
         .drop-fall{animation:dropFall .4s ease-out both}
       `}</style>
 
-      {/* Orbs */}
       <div className={`pointer-events-none absolute -left-20 top-40 h-80 w-80 rounded-full bg-cyan-500/10 blur-[140px] pulse-slow ${orbOpacity}`} />
       <div className={`pointer-events-none absolute -right-20 bottom-40 h-72 w-72 rounded-full bg-blue-500/10 blur-[120px] pulse-slow ${orbOpacity}`} />
 
-      {/* Nav */}
       <GlassNav dark={dark} toggleTheme={toggleTheme} userName={userName} />
 
-      {/* Hero */}
       <section className="relative flex flex-col items-center justify-center overflow-hidden px-6 py-16 text-center">
         <div className={`pointer-events-none absolute -right-20 top-10 h-60 w-60 rounded-full ${dark ? 'bg-cyan-500/10' : 'bg-cyan-200/40'} blur-[120px] pulse-slow`} />
         <div className="relative z-10 anim-fadeUp">
@@ -143,28 +133,22 @@ export default function WaterTrackerPage() {
         </div>
       </section>
 
-      {/* Main content */}
       <section className="relative pb-20">
         <div className="mx-auto max-w-5xl px-6">
           <Reveal className="grid grid-cols-1 gap-6 lg:grid-cols-5">
 
-            {/* ── Water bottle visual ── */}
             <div className={`lg:col-span-2 rounded-3xl border p-8 flex flex-col items-center ${cardBg}`}>
-              {/* Bottle visualization */}
               <div className="relative mx-auto h-72 w-36 overflow-hidden rounded-3xl border-2 border-cyan-500/30 bg-black/20">
-                {/* Water fill */}
                 <div
                   className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-cyan-500 to-cyan-400/80 transition-all duration-700 ease-out"
                   style={{ height: `${progress}%` }}
                 >
-                  {/* Wave effect */}
                   <div className="absolute -top-2 left-0 h-4 w-[200%] opacity-40">
                     <svg viewBox="0 0 1200 40" className="water-wave h-full w-full">
                       <path d="M0,20 C150,40 350,0 500,20 C650,40 850,0 1000,20 C1150,40 1200,20 1200,20 L1200,40 L0,40 Z" fill="currentColor" className="text-cyan-300" />
                     </svg>
                   </div>
                 </div>
-                {/* Percentage label */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className={`text-3xl font-black ${progress > 50 ? 'text-white' : dark ? 'text-white' : 'text-gray-700'}`}>
                     {Math.round(progress)}%
@@ -172,7 +156,6 @@ export default function WaterTrackerPage() {
                 </div>
               </div>
 
-              {/* Stats under bottle */}
               <div className="mt-6 w-full space-y-2 text-center">
                 <p className="text-2xl font-black text-cyan-400">{totalMl} ml</p>
                 <p className={`text-sm ${mutedText}`}>of {goalMl} ml goal</p>
@@ -182,7 +165,6 @@ export default function WaterTrackerPage() {
                 )}
               </div>
 
-              {/* Edit goal */}
               <button
                 onClick={() => setShowGoalEdit((v) => !v)}
                 className={`mt-4 text-xs font-medium transition hover:underline ${dark ? 'text-cyan-400' : 'text-cyan-600'}`}
@@ -204,7 +186,6 @@ export default function WaterTrackerPage() {
               )}
             </div>
 
-            {/* ── Quick add buttons ── */}
             <div className={`lg:col-span-3 rounded-3xl border p-8 ${cardBg}`}>
               <h3 className="text-lg font-bold uppercase tracking-wide">Quick Add</h3>
               <p className={`mt-1 text-sm ${mutedText}`}>Tap a size to log water instantly</p>
@@ -229,7 +210,6 @@ export default function WaterTrackerPage() {
                 ))}
               </div>
 
-              {/* Custom amount */}
               <div className="mt-6">
                 <p className={`text-xs font-semibold uppercase tracking-widest ${mutedText}`}>Custom Amount</p>
                 <div className="mt-2 flex items-center gap-2">
@@ -250,7 +230,6 @@ export default function WaterTrackerPage() {
                 </div>
               </div>
 
-              {/* Undo last */}
               {entries.length > 0 && (
                 <button
                   onClick={removeLastEntry}
@@ -264,7 +243,6 @@ export default function WaterTrackerPage() {
         </div>
       </section>
 
-      {/* ── Today's log ── */}
       {entries.length > 0 && (
         <section className="pb-20">
           <Reveal className="mx-auto max-w-5xl px-6">
@@ -296,7 +274,6 @@ export default function WaterTrackerPage() {
         </section>
       )}
 
-      {/* ── Hydration tips ── */}
       <section className="pb-20">
         <Reveal className="mx-auto max-w-5xl px-6">
           <div className={`rounded-3xl border p-8 md:p-10 ${cardBg}`}>
@@ -323,14 +300,16 @@ export default function WaterTrackerPage() {
         </Reveal>
       </section>
 
-      {/* Footer */}
       <footer className={`border-t ${footerBg}`}>
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 py-12 md:flex-row">
           <div>
             <h2 className="text-lg font-black uppercase tracking-wider">FitFlow</h2>
             <p className={`mt-1 text-xs ${mutedText}`}>AI-Powered Edge-First Fitness Platform</p>
           </div>
-          <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>© {new Date().getFullYear()} FitFlow. All rights reserved.</p>
+          <div className="flex flex-col items-center gap-1">
+            <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>© {new Date().getFullYear()} FitFlow. All rights reserved.</p>
+            <span className={`text-[10px] font-semibold uppercase tracking-widest ${dark ? 'text-cyan-500/50' : 'text-cyan-600/40'}`}>📱 FitFlow App Coming Soon</span>
+          </div>
         </div>
       </footer>
     </div>

@@ -6,7 +6,6 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
 import GlassNav from '@/app/components/GlassNav'
 
-/* ── Scroll-reveal ── */
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
@@ -24,7 +23,6 @@ function Reveal({ children, className = '' }: { children: React.ReactNode; class
   return <div ref={ref} className={`transition-all duration-700 ease-out ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-14'} ${className}`}>{children}</div>
 }
 
-/* ── BMI category helpers ── */
 function bmiCategory(bmi: number) {
   if (bmi < 16) return { label: 'Severe Underweight', color: 'text-red-400', barColor: 'bg-red-500' }
   if (bmi < 18.5) return { label: 'Underweight', color: 'text-orange-400', barColor: 'bg-orange-500' }
@@ -63,14 +61,12 @@ function bmiAnalysis(bmi: number, age: number, gender: string) {
   return { category: cat, tips }
 }
 
-/* ── Ideal weight (Devine formula) ── */
 function idealWeight(heightCm: number, gender: string) {
   const inches = heightCm / 2.54
   if (gender === 'Male') return Math.round(50 + 2.3 * (inches - 60))
   return Math.round(45.5 + 2.3 * (inches - 60))
 }
 
-/* ═══════ BMI PAGE ═══════ */
 export default function BmiPage() {
   const router = useRouter()
   const [dark, setDark] = useState(true)
@@ -103,7 +99,6 @@ export default function BmiPage() {
     const analysis = bmiAnalysis(bmi, a, gender)
     const ideal = idealWeight(h, gender)
 
-    // BMR (Mifflin-St Jeor)
     let bmr: number
     if (gender === 'Male') bmr = 10 * w + 6.25 * h - 5 * a + 5
     else bmr = 10 * w + 6.25 * h - 5 * a - 161
@@ -114,10 +109,7 @@ export default function BmiPage() {
     setResult({ bmi: Math.round(bmi * 10) / 10, analysis, ideal, bmr: Math.round(bmr), tdee })
   }
 
-  /* ── Theme ── */
   const bg = dark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'
-  const navBg = dark ? 'bg-black/80 border-white/10' : 'bg-white/80 border-gray-200'
-  const navText = dark ? 'text-gray-400' : 'text-gray-500'
   const cardBg = dark ? 'border-white/10 bg-white/[.03]' : 'border-gray-200 bg-white'
   const inputBg = dark ? 'bg-white/[.06] border-white/10 text-white placeholder:text-gray-500' : 'bg-gray-100 border-gray-300 text-gray-900 placeholder:text-gray-400'
   const labelText = dark ? 'text-gray-400' : 'text-gray-600'
@@ -125,7 +117,6 @@ export default function BmiPage() {
   const mutedText = dark ? 'text-gray-500' : 'text-gray-400'
   const orbOpacity = dark ? '' : 'opacity-30'
 
-  /* ── BMI bar position (0-100%) from BMI 10 to 45 ── */
   const barPercent = result ? Math.min(Math.max(((result.bmi - 10) / 35) * 100, 0), 100) : 0
 
   return (
@@ -139,14 +130,11 @@ export default function BmiPage() {
         .pulse-slow{animation:pulseSlow 6s ease-in-out infinite}
       `}</style>
 
-      {/* orbs */}
       <div className={`pointer-events-none absolute -left-20 top-40 h-80 w-80 rounded-full bg-red-500/10 blur-[140px] pulse-slow ${orbOpacity}`} />
       <div className={`pointer-events-none absolute -right-20 bottom-40 h-72 w-72 rounded-full bg-green-500/10 blur-[120px] pulse-slow ${orbOpacity}`} />
 
-      {/* ── Nav ── */}
       <GlassNav dark={dark} toggleTheme={toggleTheme} userName="" />
 
-      {/* ── Hero ── */}
       <section className="relative flex flex-col items-center justify-center overflow-hidden px-6 py-20 text-center">
         <div className={`pointer-events-none absolute -right-20 top-10 h-60 w-60 rounded-full ${dark ? 'bg-yellow-500/10' : 'bg-yellow-200/40'} blur-[120px] pulse-slow`} />
         <div className="relative z-10 anim-fadeUp">
@@ -162,7 +150,6 @@ export default function BmiPage() {
         </div>
       </section>
 
-      {/* ── Input form ── */}
       <section className="relative pb-8">
         <div className="mx-auto max-w-3xl px-6">
           <Reveal>
@@ -212,7 +199,6 @@ export default function BmiPage() {
         </div>
       </section>
 
-      {/* ── Result ── */}
       {result && (
         <section className="pb-20">
           <div className="mx-auto max-w-3xl px-6">
@@ -220,17 +206,14 @@ export default function BmiPage() {
               <div className={`rounded-3xl border p-8 md:p-10 ${cardBg}`}>
                 <h3 className="text-lg font-bold uppercase tracking-wide">Your Results</h3>
 
-                {/* Big BMI number */}
                 <div className="mt-8 text-center">
                   <p className={`text-7xl font-black md:text-9xl ${result.analysis.category.color}`}>{result.bmi}</p>
                   <p className={`mt-2 text-xl font-bold uppercase tracking-wide ${result.analysis.category.color}`}>{result.analysis.category.label}</p>
                 </div>
 
-                {/* BMI gradient bar */}
                 <div className="mx-auto mt-10 max-w-lg">
                   <div className="relative h-5 w-full overflow-hidden rounded-full">
                     <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-orange-400 via-yellow-400 via-green-500 via-yellow-400 via-orange-400 to-red-600 rounded-full" />
-                    {/* pointer */}
                     <div className="absolute top-0 h-full w-1 bg-white shadow-[0_0_8px_rgba(255,255,255,.8)] rounded-full transition-all duration-700" style={{ left: `${barPercent}%` }} />
                   </div>
                   <div className="mt-2 flex justify-between text-[10px] font-semibold uppercase tracking-wider">
@@ -241,7 +224,6 @@ export default function BmiPage() {
                   </div>
                 </div>
 
-                {/* Stats grid */}
                 <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4">
                   {[
                     { label: 'BMI Score', value: `${result.bmi}`, accent: result.analysis.category.color },
@@ -256,7 +238,6 @@ export default function BmiPage() {
                   ))}
                 </div>
 
-                {/* Analysis tips */}
                 <div className={`mt-8 rounded-2xl border p-6 ${dark ? 'border-green-500/20 bg-green-500/[.05]' : 'border-green-200 bg-green-50'}`}>
                   <p className="text-sm font-bold text-green-400">AI Health Analysis</p>
                   <ul className="mt-4 space-y-3">
@@ -270,7 +251,6 @@ export default function BmiPage() {
               </div>
             </Reveal>
 
-            {/* BMI reference table */}
             <Reveal className="mt-6">
               <div className={`rounded-3xl border p-8 ${cardBg}`}>
                 <h3 className="text-lg font-bold uppercase tracking-wide">BMI Reference Chart</h3>
@@ -308,7 +288,6 @@ export default function BmiPage() {
         </section>
       )}
 
-      {/* ── What is BMI section (fills page when no result) ── */}
       <section className="py-24 md:py-32">
         <Reveal className="mx-auto max-w-4xl px-6 text-center">
           <p className={`text-[10px] font-semibold uppercase tracking-[.35em] ${mutedText}`}>Understanding BMI</p>
@@ -334,14 +313,16 @@ export default function BmiPage() {
         </div>
       </section>
 
-      {/* ── Footer ── */}
       <footer className={`border-t ${dark ? 'border-white/10 bg-white/[.02]' : 'border-gray-200 bg-gray-100'}`}>
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 py-12 md:flex-row">
           <div>
             <h2 className="text-lg font-black uppercase tracking-wider">FitFlow</h2>
             <p className={`mt-1 text-xs ${mutedText}`}>AI-Powered Edge-First Fitness Platform</p>
           </div>
-          <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>© {new Date().getFullYear()} FitFlow. All rights reserved.</p>
+          <div className="flex flex-col items-center gap-1">
+            <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>© {new Date().getFullYear()} FitFlow. All rights reserved.</p>
+            <span className={`text-[10px] font-semibold uppercase tracking-widest ${dark ? 'text-indigo-500/50' : 'text-indigo-600/40'}`}>📱 FitFlow App Coming Soon</span>
+          </div>
         </div>
       </footer>
     </div>
