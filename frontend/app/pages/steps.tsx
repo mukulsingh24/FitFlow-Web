@@ -369,7 +369,7 @@ export default function StepsSyncPage() {
             </p>
             <div className={`mt-6 rounded-2xl border p-4 ${dark ? 'border-white/5 bg-white/[.02]' : 'border-gray-100 bg-gray-50'}`}>
               <p className={`text-xs ${mutedText}`}>Expected Launch</p>
-              <p className="text-lg font-black mt-1">Q3 2025</p>
+              <p className="text-lg font-black mt-1">April 2026</p>
             </div>
             <button
               onClick={() => setShowDownload(false)}
